@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Slider</title>
+
+	<style>
+		
+		.slider {
+			width: 90%; 
+			position: relative;
+			margin: 1rem auto;
+			text-align: center;  
+		}
+
+		.slider-slides {
+			position: relative;
+			height: 400px; 
+		}
+
+		.slider-slide {
+			position: absolute;
+			top: 0; 
+			left: 0; 
+			width: 100%; 
+			height: 100%;
+			opacity: 0; 
+			transition: opacity 1s ease;   
+		}
+
+		.slider-slide img {
+			height: inherit;
+			width: inherit;
+			object-position: 50% 50%; 
+			object-fit: cover; 
+		}
+
+		.slider-slide.active {
+			opacity: 1; 
+			visibility: visible; 
+		}
+
+		.slider a {
+			display: block; 
+			width: 4rem; 
+			height: 4rem; 
+			border-radius: 50%; 
+			text-decoration: none; 
+			background-color: purple; 
+			color: white; 
+
+			transition: all .3s ease; 
+		}
+
+		.slider:hover { 
+
+			color: #666; 
+		}
+
+		.slider-btns {
+			position: absolute;
+			top: calc(50%  - 2rem); 
+			width: 100%; 
+			display: flex; 
+			justify-content: space-between;
+			align-items: center;
+			; 
+		}
+
+
+	</style>
+</head>
+<body>
+
+	<div class="slider">
+		<div class="slider-slides">
+
+			<div class="slider-slide active">
+				<img src="https://placeimg.com/400/400/tech">
+			</div>
+
+			<div class="slider-slide">
+				<h4>Diapositiva 2</h4>
+				<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus necessitatibus corporis, labore, nam, provident reprehenderit eius ab totam reiciendis illum ducimus aut animi? Consequuntur repellendus, nemo at recusandae.</p>
+			</div>
+
+			<div class="slider-slide">
+				<img src="https://placeimg.com/400/400/animals">
+			</div>
+
+			<div class="slider-slide">
+				<h4>Diapositiva 4</h4>
+				<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus necessitatibus corporis, labore, nam, provident reprehenderit eius ab totam reiciendis illum ducimus aut animi? Consequuntur repellendus, nemo at recusandae.</p>
+			</div>
+
+		</div>
+
+		<div class="slider-btns">
+			<a href="#" class="prev"> <<< </a>
+			<a href="#" class="next"> >>> </a>
+		</div>
+
+	</div>
+	<script>
+		
+		document.addEventListener('DOMContentLoaded', function() {
+
+
+			function slider() {
+				const d = document; 
+				const $nextBtn = d.querySelector('.slider-btns .next'), 
+				$prevBtn = d.querySelector('.slider-btns .prev'),
+				$slides = d.querySelectorAll('.slider-slide')
+
+				let i = 0; 
+
+				d.addEventListener('click', e => {
+
+			
+					if (e.target === $prevBtn) {
+
+						e.preventDefault(); 
+
+						$slides[i].classList.remove("active"); 
+
+						i--; 
+
+						if (i < 0) {
+							i = $slides.length - 1; 
+						}
+
+						$slides[i].classList.add("active"); 
+					}
+
+					if (e.target === $nextBtn) {
+						e.preventDefault(); 
+
+						$slides[i].classList.remove("active"); 
+
+						i++; 
+
+						if (i >= $slides.length ) {
+							i =0; 
+						}
+						
+						$slides[i].classList.add("active"); 
+					}
+
+				}); 
+			}; 
+
+
+			slider(); 
+
+
+
+		}); 
+
+	</script>
+</body>
+</html>

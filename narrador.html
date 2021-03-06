@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Narrador</title>
+</head>
+<body>
+
+	<select id="speech-select">
+		<option value="">--Elige una voz--</option>
+	</select>
+	<br><br>
+
+	<textarea id="speech-text" cols="30" rows="10" placeholder="Ingresa texto para leer"></textarea>
+	<br><br>
+	<button id="speech-btn">Leer Texto</button>
+
+	<script>
+		//Inicar desde un servidor para que funcione
+
+
+		const d = document, w = window; 
+
+		function speechReader() {
+			const $speechSelect = d.getElementById('speech-select'),
+			$speechTextarea = d.getElementById('speech-text'),
+			$speechBtn = d.getElementById('speech-btn'),
+			speechMessage = new SpeechSynthesisUtterance(); 
+			// body...
+
+
+			let voices = []; 
+
+			d.addEventListener('DOMContentLoaded', e => {
+
+				//Necesita supropio evento para poder ejecutarse
+				w.speechSynthesis.addEventListener('voiceschanged', e => {
+
+					voices = w.speechSynthesis.getVoices();
+
+					voices.forEach(voice => {
+						const $option = d.createElement('option');
+						$option.value = voice.name; 
+						$option.textContent = `${voice.name} - ${voice.lang}`;  
+
+						$speechSelect.appendChild($option); 
+					}); 
+			
+				}); 
+
+			});
+
+
+			//aquí se detecta los cambios en el select
+			d.addEventListener('change', e => {
+
+				if (e.target === speechSelect) {
+
+					//asiga lo valores de voices a speechMessage.voice buscando que el valor sea igual e.target.value
+					speechMessage.voice = voices.find(voice => voice.name === e.target.value) 
+
+				}
+
+			});
+
+			//Aquí se activa la lectura del texto 
+			d.addEventListener('click', e => {
+				if (e.target === speechBtn) {
+
+					//speechMessage tiene una propiedad text donde se le asigna lo que va a leer 
+					speechMessage.text = $speechTextarea.value; 
+					//Finalmente con el método speak lee el texto
+					w.speechSynthesis.speak(speechMessage); 
+				}
+			});
+		}
+
+		speechReader(); 
+	</script>
+</body>
+</html>

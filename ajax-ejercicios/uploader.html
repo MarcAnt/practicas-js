@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Uploader con AJAX</title>
+	<style>
+		html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: sans-serif;
+        }
+
+        *, *::before, *::after {
+            margin: inherit;
+            padding: inherit;
+            box-sizing: inherit;
+        }
+
+        main {
+        	display: flex; 
+        	flex-direction: column; 
+        	justify-content: center; 
+        	align-items: center; 
+        	text-align: center;
+        	min-height: 100vh; 
+        }
+
+        progress {
+        	margin-top: 1rem; 
+        }
+	</style>
+</head>
+<body>
+	<main>
+		<input type="file" name="files" id="files" multiple>
+	</main>
+
+	<script>
+		const d = document, $main = d.querySelector('main'), $files = d.getElementById('files'); 
+
+		// console.log($main, $files);
+
+		const uploader = (file) => {
+		
+
+			const xhr = new XMLHttpRequest(), formData = new FormData();
+
+			formData.append('file', file); 
+
+			xhr.addEventListener('readystatechange', e => {
+
+				if (xhr.readyState !== 4) return; 
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+
+                	//Convierte los datos objeto pero de JS
+                	let json = JSON.parse(xhr.responseText); 
+
+                	console.log(json);
+                 
+                }else {
+
+                    let message = xhr.statusText || "Ocurrió un error"; 
+                    alert(`Error ${xhr.status}: ${message}`)
+                }
+
+
+			});
+
+			xhr.open('POST', 'assets/uploader.php'); 
+			xhr.setRequestHeader('enc-type', 'multipart/form-data'); 
+			xhr.send(formData);   
+		}
+
+		const progressUpload = file => {
+			const $progress = d.createElement('progress'), $span = d.createElement('span');
+
+			$progress.value = 0; 
+			$progress.max = 100; 
+
+			$main.insertAdjacentElement('beforeend', $progress);	 
+			$main.insertAdjacentElement('beforeend', $span);
+
+			//Este es el objeto que permite leer los archivos 
+			const fileReader = new FileReader(); 
+			fileReader.readAsDataURL(file); 
+
+			//Mientras carga
+			fileReader.addEventListener('progress', e => {
+
+				let progress = parseInt( (e.loaded * 100) / e.total ); 
+				$progress.value = progress;
+				$span.innerHTML = `<b>${file.name} - ${progress}%</b>` 
+			} );	 
+
+			//Despues de terminar la carga
+ 			fileReader.addEventListener('loadend', e => {
+ 				//aquí ya sube el archivo
+ 				uploader(file); 
+ 				setTimeout(() => {
+ 					$main.removeChild($progress); 
+ 					$main.removeChild($span);
+ 					$files.value = '';  
+ 				},3000);
+
+ 			} );	 
+		}
+
+		d.addEventListener('change', e => {
+
+			if(e.target === $files) {
+		
+
+				//Con array.from se convierte el objeto en un array iterable
+				const files = Array.from(e.target.files); 
+
+				files.forEach(el => progressUpload(el)); 
+			}
+
+		}); 
+	</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Scrollspy</title>
+
+	<style>
+		body, html,* {
+			margin: 0; 
+			padding: 0; 
+			box-sizing: border-box;
+			font-family: "Helvetica", sans-serif; 
+			font-weight: bold; 
+			scroll-behavior: smooth;
+		}
+
+		body {
+			display: grid; 
+			grid-template-rows: 3% auto; 
+			grid-template-columns: 80% auto; 
+			grid-template-areas: 
+			"header header"
+			"main   menu"
+			;   
+		}
+
+		header { 
+			background-color: yellow; 
+			grid-area: header; 
+		}
+
+		aside {
+			background-color: #666; 
+			grid-area: menu; 
+		}
+
+		aside ul {
+			position: sticky;
+			top: 0; 
+			left: 0; 
+			display: flex; 
+			flex-direction: column; 
+			justify-content: flex-start;
+
+			width: 100%; 
+		}
+
+		aside ul a {
+			width: inherit; 
+			padding: 1rem 0 1rem .5rem;
+			transition: background .3s ease;
+		}
+
+		main {
+			grid-area: main; 
+		}
+
+		main section {
+			height: 70vh;
+			text-align: center;
+			margin: 0 auto; 
+		}
+
+		.active { 
+			background-color: lightyellow; 
+		}
+		
+
+	</style>
+</head>
+<body>
+	
+	<header>
+		ScrollSpy
+	</header>
+	<main>
+		<section id="section-1" data-scroll >Sección 1</section>
+		<section id="section-2" data-scroll >Sección 2</section>
+		<section id="section-3" data-scroll >Sección 3</section>
+		<section id="section-4" data-scroll >Sección 4</section>
+		<section id="section-5" data-scroll >Sección 5</section>
+		<section id="section-6" data-scroll >Sección 6</section>
+		<section id="section-7" data-scroll >Sección 7</section>
+		<section id="section-8" data-scroll >Sección 8</section>
+	</main>
+	<aside>
+		<ul>
+			
+			<a href="#section-1"  data-scroll  class="active">Sección 1</a>
+			<a href="#section-2"  data-scroll >Sección 2</a>
+			<a href="#section-3"  data-scroll >Sección 3</a>
+			<a href="#section-4"  data-scroll >Sección 4</a>
+			<a href="#section-5"  data-scroll >Sección 5</a>
+			<a href="#section-6"  data-scroll >Sección 6</a>
+			<a href="#section-7"  data-scroll >Sección 7</a>
+			<a href="#section-8"  data-scroll >Sección 8</a>
+
+		</ul>
+	</aside>
+
+	<script>
+		const d = document; 
+		function scrollSpy() {
+
+			const $sections = d.querySelectorAll('section[data-scroll]'); 
+
+			const cb = (entries) => {
+				
+				entries.forEach(entry => {
+
+					const id = entry.target.getAttribute('id'); 
+					if (entry.isIntersecting) {
+
+						d.querySelector(`a[data-scroll][href="#${id}"]`).classList.add('active'); 
+					}else {
+
+						d.querySelector(`a[data-scroll][href="#${id}"]`).classList.remove('active'); 
+					}
+				}); 
+	
+			}
+
+			//threshold: [0.5, 0.75] el elemento se va activar cuando el elemento se muestre el 50% hasta 75%
+
+			let observer = new IntersectionObserver(cb, { threshold: [0.5, 0.75]});
+
+			$sections.forEach(el => observer.observe(el))
+		}
+
+		scrollSpy(); 
+ 
+
+	</script>
+</body>
+</html>

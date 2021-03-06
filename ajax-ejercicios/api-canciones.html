@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Api de canciones</title>
+
+	<style>
+
+		html {
+			font-family: sans-serif;
+		}
+
+		main {
+			display: flex; 
+			flex-direction: column-reverse;
+		}
+
+		.loader {
+			display: none;
+			margin: auto;
+		}
+
+		.song blockquote {
+			white-space: pre-wrap; /*Con esto respeta los espacios que tiene la respuesta*/
+		}
+
+		@media screen and (min-width: 800px) {
+			main {
+				flex-direction: row;
+			}
+
+			main > * {
+				padding: 1rem; 
+				flex-basis: 50%;
+			}
+		}
+
+	</style>
+</head>
+<body>
+	<h1>Buscador de Canciones</h1>
+	<form  id="song-search">
+		<input type="text" name="artist" placeholder="Nombre del Artista" required>
+		<br>
+		<input type="text" name="song" placeholder="Nombre de la Canción" required>
+		<br>
+		<input type="submit" value="Enviar">
+	</form>
+
+	<img src="../loader.svg" class="loader" alt="Cargando...">
+	<aside class="error"></aside>
+
+	<main>
+		<article class="artist">
+			<!-- <h2>Información del Artista</h2> -->
+		</article>
+		<article class="song">
+			<!-- <h2>Letra de la canción</h2> -->
+			
+		</article>
+	</main>
+
+
+
+
+
+
+	<script>
+		
+		const d = document, 
+		$loader = d.querySelector('.loader'),
+		$error = d.querySelector('.error'),
+		$main = d.querySelector('main'),
+		$form = d.getElementById('song-search'),
+		$artist = d.querySelector('.artist'),
+		$song = d.querySelector('.song');
+
+
+		$form.addEventListener('submit', async e => {
+			e.preventDefault(); 
+
+			try {
+				
+				$loader.style.display = 'block'; 
+
+				let artist = e.target.artist.value.toLowerCase(), 
+				song = e.target.song.value.toLowerCase(),
+				$artisTemplate = "", 
+				$songTemplate = "", 
+				artistAPI = `https://www.theaudiodb.com/api/v1/json/1/search.php?s=${artist}`, 
+				songAPI = `https://api.lyrics.ovh/v1/${artist}/${song}`,
+				artistFetch = fetch(artistAPI), 
+				songFetch = fetch(songAPI),
+				[artistRes, songRes] = await Promise.all([artistFetch, songFetch]), //Aquí espera la respuesta de ambas apis y las almacena en las variables Res. 
+				artistData = await artistRes.json(),
+				songData = await songRes.json(); 
+
+
+				//console.log(artistRes, songRes);
+				console.log(artistData, songData);
+
+				if (artistData.artists === null) {
+					$artistTemplate = `<h2> No existe el intérprete <mark>${artist}</mark> </h2>`; 
+				}else {
+					let artist = artistData.artists[0]; 
+					$artistTemplate = `
+					<h2>${artist.strArtist}</h2>
+					<img src="${artist.strArtistThumb}" alt="${artist.strArtist}">
+					<p>${artist.intBornYear || "s/f"} - ${ artist.intDiedYear || "Presente" }</p>
+					<p>${artist.strCountry}</p>
+					<p>${artist.strGenre} - ${artist.strStyle} </p>
+					<a href="http://${artist.strWebsite}" target="_blank" rel="noreferrer noopener">Sitio Web</a>
+					<p>${artist.strBiographyEN}</p>
+					`; 
+				}
+
+				if (songData.error) {
+
+					$songTemplate = `<h2> No existe el intérprete <mark>${song}</mark> </h2>`; 
+				}else {
+					$songTemplate = `
+
+						<h2>${song.toUpperCase()}</h2>
+						<blockquote>${songData.lyrics}</blockquote>
+
+					`; 
+
+				}
+				$loader.style.display = 'none';
+				$artist.innerHTML = $artistTemplate; 
+				$song.innerHTML = $songTemplate; 
+
+
+
+
+			} catch(err) {
+				console.log(err);
+				$loader.style.display = 'none'; 
+				let message = err.statusText || 'Ocurrió un error'; 
+				$error.innerHTML = `<p> Error ${err.status}: ${message}</p>`; 
+			}
+		}); 
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>

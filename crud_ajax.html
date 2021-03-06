@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD API REST AJAX</title>
+</head>
+<body>
+    
+    <h2>CRUD API REST AJAX</h2>
+    <section>
+        <article class="crud">
+            <article>
+                <h2 class="crud-title">Agregar Santo</h2>
+
+                <form class="crud-form">
+                    <input type="text" name="nombre" placeholder="Nombre" required>
+                    <br>                   
+                    <input type="text" name="constelacion" placeholder="Constelación" required>
+                    <br>
+
+                    <input type="hidden" name="id">
+
+                    <input type="submit" value="Enviar">
+                </form>
+            </article>
+        </article>
+
+        <article>
+            <h2>Ver Santos</h2>
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Constelaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- En el tbody va lo que se crea en el template -->
+                </tbody>
+            </table>
+        </article>
+    </section>
+
+    <template id="crud-template">
+        <tr>
+            <td class="name"></td>
+            <td class="constellation"></td>
+            <td>
+                <button class="edit">Editar</button>
+                <button class="delete">Eliminar</button>
+            </td>
+        </tr>
+    </template>
+
+    <script>
+
+        const d = document, 
+        $table = d.querySelector('.crud-table'), 
+        $form = d.querySelector('.crud-form'),
+        $title = d.querySelector('.crud-title'),
+        $template = d.getElementById('crud-template').content, 
+        $fragment = d.createDocumentFragment(); 
+
+        const ajax = (options) => {
+            let {url,method, success, error, data} = options; 
+
+            const xhr = new XMLHttpRequest(); 
+
+            xhr.addEventListener('readystatechange', e => {
+
+                if(xhr.readyState !== 4) return; 
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+				
+					
+					let json = JSON.parse(xhr.responseText); 
+				
+                    success(json); 
+
+				}else{ 
+                    let message = xhr.statusText || "Ocurrió un error"; 
+			        error(`Error ${xhr.status}: ${message}`)
+				}
+
+
+            }); 
+
+			xhr.open(method || 'GET', url); 
+
+            //Importante setearlo para el tipo de API que lo pida. 
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8'); 
+
+            //La dats viene como obejto de JS y no de JSON por lo tanto, se tranforma para que lo lea como formato de texto para JSON y sean enviados
+            xhr.send(JSON.stringify(data)); 
+        }
+
+        // ajax(); 
+
+        const getAll = () => {
+            ajax({
+                url: 'http://localhost:3000/santos', 
+                method: 'GET', 
+                success: (res) => {
+                    console.log(res)
+                    
+                    res.forEach(el => {
+                        $template.querySelector('.name').textContent = el.nombre; 
+                        $template.querySelector('.constellation').textContent = el.constelacion; 
+
+                        //Colocar los dataset para luego usarlos al editar o eliminar un elemento 
+                        $template.querySelector('.edit').dataset.id = el.id; 
+                        $template.querySelector('.edit').dataset.name = el.nombre; 
+                        $template.querySelector('.edit').dataset.constellation = el.constelacion; 
+                        $template.querySelector('.delete').dataset.id = el.id; 
+
+                        let clone = d.importNode($template, true); 
+                        $fragment.appendChild(clone); 
+                    })
+
+                    $table.querySelector('tbody').appendChild($fragment); 
+                }, 
+                error: (err) => {
+                    console.log(err)
+                    $table.insertAdjacentHTML('afterend', `<p><b>${err}</b></p>`); 
+                },
+                data: null
+            }); 
+        }
+        
+        // debugger;
+
+        d.addEventListener('DOMContentLoaded', getAll);
+
+        d.addEventListener('submit', e => {
+            if(e.target === $form) {
+                e.preventDefault(); 
+
+                //Si el input hidden no tiene valor
+                if(!e.target.id.value){
+                    //Create - post - Crear la entrada 
+                    ajax({
+                        url:'http://localhost:3000/santos',
+                        method: 'POST', 
+                        success: (res) => location.reload(), 
+                        error: (err) => $form.insertAdjacentHTML('afterend', `<p><b>${err}</b></p>`), 
+                        data: {
+                            nombre: e.target.nombre.value,
+                            constelacion: e.target.constelacion.value
+                        }
+                    }); 
+                }else {
+                    //PUT - editar 
+                    ajax({
+                        url:`http://localhost:3000/santos/${e.target.id.value}`,
+                        method: 'PUT', 
+                        success: (res) => location.reload(), 
+                        error: (err) => $form.insertAdjacentHTML('afterend', `<p><b>${err}</b></p>`), 
+                        data: {
+                            nombre: e.target.nombre.value,
+                            constelacion: e.target.constelacion.value
+                        }
+                    }); 
+
+                }
+            }
+        });
+
+
+        d.addEventListener('click', e => {
+
+            if(e.target.matches(".edit")) {
+                $title.textContent = "Editar Santo"; 
+
+                //aqui se asigan los valores a input correspondiente 
+                $form.nombre.value = e.target.dataset.name;  
+                $form.constelacion.value = e.target.dataset.constellation;  
+
+                //Este es el elemento input hidden que permite evaluar ahora si se va a editar el elemento 
+                $form.id.value = e.target.dataset.id;  
+            }
+
+            if(e.target.matches(".delete")) {
+
+                let isDelete = confirm(`¿Estás seguro que deseas elmininar el id ${e.target.dataset.id}?`); 
+
+                if (isDelete) {
+                    ajax({
+                        url:`http://localhost:3000/santos/${e.target.dataset.id}`,
+                        method: 'DELETE', 
+                        success: (res) => location.reload(), 
+                        error: (err) => $form.insertAdjacentHTML('afterend', `<p><b>${err}</b></p>`)
+                       
+                    }); 
+                }
+
+            }
+
+        }); 
+
+    </script>  
+</body>
+</html>

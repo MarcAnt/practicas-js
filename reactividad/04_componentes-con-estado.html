@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Estado Inmutable</title>
+</head>
+<body>
+
+	<h1>Estado Inmutable</h1>
+	<form  id="todo-form">
+		<input type="text" id="todo-item" placeholder="Tarea por hacer">
+		<input type="submit" value="Agregar">
+	</form>
+	<h2>Lista de Tareas</h2>
+	
+	<ul id="todo-list"></ul>
+
+
+	<script>
+		
+		const d = document;
+
+
+		//El State global
+		const state = {
+			todoList: []
+		}
+
+		//Template UI
+		const template = () => {
+
+			if (template.data.todoList.length < 1) {
+				return `<p> <em>Lista de tareas por hacer</em> </p>`; 
+			}
+
+			//Se le agrega el join para convertir a cadena de texto el array que devuelve el map
+			let todos = template.todoList.map( item =>`<li>${item}</li>`).join('');
+
+			// console.log(todos); 
+
+			return todos; 
+		}
+
+
+		//agregar el state al template que genera el componente de ui (state local)
+		template.data = {
+			todoList: [] 
+		}
+
+
+		//Render UI
+		const render = () => {
+			$list = d.getElementById('todo-list'); 
+
+			if (!$list) return; 
+
+			$list.innerHTML = template(); 
+		
+		}
+
+		//Actualizar el state de forma reactiva
+		const setState = obj => {
+			for (let key in obj) {
+				//Verifica primero que tenga la proiedad todoList, y como la tiene, le asigma
+				//el array ["Tarea 1", "Tarea 2", "Tarea 3"]  como valor!
+				
+				if (template.data.hasOwnProperty(key)) {
+
+					// console.log(state, key, state[key], obj[key]);
+
+					template.data[key] = obj[key]; 
+				}
+			}
+
+			render(); 
+		}
+
+		//Obtenemos una copia inmutable del State
+								//Convierte primero de objeto de js a JSON y luego de JSON a obj de jS totalmene distinto y desvinculado del state original
+		const getState = () => JSON.parse(JSON.stringify(template.data)); 
+
+		d.addEventListener('DOMContentLoaded', render); 
+
+		//Establaciendo valores por defecto
+		setState({
+			todoList: ['Tarea 1', 'Tarea 2', 'Tarea 3']
+		})
+
+
+
+		d.addEventListener('submit', e => {
+			if (!e.target.matches('#todo-form')) return false; 
+
+			e.preventDefault(); 
+
+			const $item = d.getElementById('todo-item'); 
+
+			if (!$item) return; 
+			if ($item.value === '') return; 
+			
+			//Actulizar el state de forma reactiva
+			const lastState = getState(); 
+			
+			lastState.todoList.push($item.value); 
+			setState({todoList: lastState.todoList}); 
+
+			//Limpiar el input	
+			$item.value =''; 
+			$item.focus(); 
+
+		});  
+
+	</script>
+</body>
+</html>

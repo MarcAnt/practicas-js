@@ -1,0 +1,9 @@
+{
+	"nombre": "Marcos",
+	"edad": "32", 
+	"boolean" : "true",
+	"arreglo" : ["1", "2", "3"], 
+	"objeto" : {"twitter": "@bymarcant", "email": "bymarcant@gmail.com"}, 
+	"nulo" : null
+
+}

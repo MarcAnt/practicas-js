@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Librería Componente con Estado</title>
+</head>
+<body>
+
+	<h1>Librería de componentes con estados</h1>
+	<form  id="todo-form">
+		<input type="text" id="todo-item" placeholder="Tarea por hacer">
+		<input type="submit" value="Agregar">
+	</form>
+	<h2>Lista de Tareas</h2>
+	
+	<ul id="todo-list"></ul>
+
+	<script src="Component.js"></script>
+
+	<script>
+		
+		const d = document;
+
+		const app = new Component({
+
+			el: "#todo-list", 
+			data: {
+				todoList: []
+			}, 
+			//recordar que en las props se genera la data
+			template: function (props) {
+
+				if (props.todoList.length < 1) {
+					return `<p> <em>Lista de tareas por hacer</em> </p>`; 
+				}
+
+				//Se le agrega el join para convertir a cadena de texto el array que devuelve el map
+				let todos = props.todoList.map( item =>`<li>${item}</li>`).join('');
+
+				
+				return todos; 
+
+			}
+		}) 
+
+
+
+		d.addEventListener('DOMContentLoaded', app.render ); 
+
+		//Establaciendo valores por defecto
+		app.setState({
+			todoList: ['Tarea 1', 'Tarea 2', 'Tarea 3']
+		})
+
+
+
+		d.addEventListener('submit', e => {
+			if (!e.target.matches('#todo-form')) return false; 
+
+			e.preventDefault(); 
+
+			const $item = d.getElementById('todo-item'); 
+
+			if (!$item) return; 
+			if ($item.value === '') return; 
+			
+			//Actulizar el state de forma reactiva
+			const lastState = app.getState(); 
+			
+			lastState.todoList.push($item.value); 
+			app.setState({todoList: lastState.todoList}); 
+
+			//Limpiar el input	
+			$item.value =''; 
+			$item.focus(); 
+
+		});  
+
+	</script>
+</body>
+</html>

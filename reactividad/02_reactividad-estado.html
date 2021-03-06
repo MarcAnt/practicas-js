@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Reactividad del estado</title>
+</head>
+<body>
+
+	<h1>Reactividad del estado</h1>
+	<form  id="todo-form">
+		<input type="text" id="todo-item" placeholder="Tarea por hacer">
+		<input type="submit" value="Agregar">
+	</form>
+	<h2>Lista de Tareas</h2>
+	
+	<ul id="todo-list"></ul>
+
+
+	<script>
+		
+		const d = document;
+
+
+		//El State
+		const state = {
+			todoList: []
+		}
+
+		//Template UI
+		const template = () => {
+
+			if (state.todoList.length < 1) {
+				return `<p> <em>Lista de tareas por hacer</em> </p>`; 
+			}
+
+			//Se le agrega el join para convertir a cadena de texto el array que devuelve el map
+			let todos = state.todoList.map( item =>`<li>${item}</li>`).join('');
+
+			// console.log(todos); 
+
+			return todos; 
+		}
+
+
+		//Render UI
+		const render = () => {
+			$list = d.getElementById('todo-list'); 
+
+			if (!$list) return; 
+
+			$list.innerHTML = template(); 
+		
+		}
+
+		//Actualizar el state de forma reactiva
+		const setState = obj => {
+			for (let key in obj) {
+				//Verifica primero que tenga la proiedad todoList, y como la tiene, le asigma
+				//el array ["Tarea 1", "Tarea 2", "Tarea 3"]  como valor!
+				
+				if (state.hasOwnProperty(key)) {
+
+					// console.log(state, key, state[key], obj[key]);
+
+					state[key] = obj[key]; 
+				}
+			}
+
+			render(); 
+		}
+
+		d.addEventListener('DOMContentLoaded', render); 
+
+		//Establaciendo valores por defecto
+		setState({
+			todoList: ['Tarea 1', 'Tarea 2', 'Tarea 3']
+		})
+
+		d.addEventListener('submit', e => {
+			if (!e.target.matches('#todo-form')) return false; 
+
+			e.preventDefault(); 
+
+			const $item = d.getElementById('todo-item'); 
+
+			if (!$item) return; 
+			if ($item.value === '') return; 
+			
+			//Actulizar el estasdo 
+			state.todoList.push($item.value);
+			render();  
+		
+
+			//Limpiar el input	
+			$item.value =''; 
+			$item.focus(); 
+
+		});  
+
+	</script>
+</body>
+</html>

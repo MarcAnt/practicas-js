@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Video e IntersectionObserver</title>
+</head>
+<body>
+
+	<video src="video.mp4" loop muted controls data-smart-video></video>
+
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+
+	<video src="video.mp4"  loop muted controls data-smart-video></video>
+
+	<script>
+		
+		const d = document, w = window; 
+		function controlVideo() {
+
+			const $videos = d.querySelectorAll('video[data-smart-video]'); 
+
+			const cb = (entries) => {
+				
+				entries.forEach(entry => {
+
+					
+					if (entry.isIntersecting) {
+
+						entry.target.play();  
+					}else {
+
+						entry.target.pause();  
+						
+					}
+
+					//Controlar que cuando se salga de la vista a otra pestaña, se detenga el video y regrese a la normalidad al estar en foco de nuevo
+					
+					w.addEventListener('visibilitychange', e => 
+						d.visibilityState === 'visible'
+						? entry.target.play()
+						:entry.target.pause() 
+					);
+				}); 
+	
+			}
+
+			//threshold: [0.5, 0.75] el elemento se va activar cuando el elemento se muestre el 50% hasta 75%
+
+			let observer = new IntersectionObserver(cb, { threshold: 0.5});
+
+			$videos.forEach(el => observer.observe(el))
+		}
+
+		controlVideo(); 
+
+	</script>	
+</body>
+</html>

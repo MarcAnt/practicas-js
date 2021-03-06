@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-dark>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+	<style>
+		
+		:root {
+			--dark-color: #666;
+			--yellow-color: yellow;
+		}
+
+		.dark-theme {
+			background-color: #555; 
+		}
+
+		/*Filtro de búsqueda*/
+		.cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		}
+
+		.card {
+			background-color: #666; 
+			color: yellow; 
+			transition: all 0.3s ease-out; 
+		}
+
+		.card img {
+			width: 100%; 
+			height: auto; 
+		}
+
+		.card figcaption {
+			padding: 1rem;  
+		}
+
+		/* Esta es la clase que se va colocar a los elementos que se van a ocultar*/
+		.filter {
+			/*display: none; */
+			
+			visibility: hidden;
+			opacity: 0; 
+			order: 1; 
+		}
+		/*Filtro de búsqueda*/
+	</style>
+</head>
+<body data-dark>
+	<a href="#">Hola</a>
+
+
+	<!-- Usar un template hace que esa etiqueta no se vea pero el contenido sí y sea dinámico -->
+	<template id="template-card">
+		<img>
+		<figcaption></figcaption>
+	</template>
+
+	<button id="btn">Remover el evento luego del primer click</button>
+
+
+
+	<p id="count-down"></p>
+
+	<button class="btn-dark-theme">Moon</button>
+
+	<div id="user-device"></div>
+
+	<video id="webcam"></video>
+
+
+	<input type="search" placeholder="Buscar..." class="card-filter">
+
+	<div class="cards">
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/tech" alt="Tech">
+			<figcaption>Tech</figcaption>
+		</figure>
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/animals" alt="Animals">
+			<figcaption>Animals</figcaption>
+		</figure>
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/arch" alt="Architecture">
+			<figcaption>Architecture</figcaption>
+		</figure>
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/people" alt="People">
+			<figcaption>People</figcaption>
+		</figure>
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/nature" alt="Nature">
+			<figcaption>Nature</figcaption>
+		</figure>
+		<figure class="card">
+			<img src="https://placeimg.com/200/200/any" alt="Any">
+			<figcaption>Any</figcaption>
+		</figure>
+	</div>
+
+
+	<!-- Los modulos solo se activan si estan en algún server -->
+	<!-- <script src="modulos.js" type="module"></script> -->
+	<script src="practicas.js"></script>
+	<script>
+
+		//Solo funciona si está en un servidor
+		// let texto = 'Hola mardito ijoeputa'; 
+
+		// const hablar = (texto) => {
+		// 	speechSynthesis.speak(new SpeechSynthesisUtterance(texto))
+		// }
+
+		// hablar(texto); 
+
+		// console.info(document.head);
+		// console.info(document.body);
+		// console.info(document.documentElement);
+		// console.info(document.doctype);
+		// console.info(document.charset);
+		// console.info(document.title);
+		// console.info(document.links);
+		// console.info(document.scripts);
+		// console.info(document.images);
+		// console.info(document.forms);
+		// console.info(document.styleSheets);
+		// console.info(document.documentElement.lang);
+		// console.info(document.documentElement.getAttribute("lang"));
+		// console.info(document.documentElement.setAttribute("lang", "es-VE"));
+		// document.documentElement.lang = 'es'; 
+
+		// setTimeout(() => {
+		// 	//Con get selection se obtiene lo que el usuario este señalando en ese momento
+		// 	console.info(document.getSelection().toString());
+		// }, 3000);
+
+
+		//Variables CSS
+		const html = document.documentElement, body = document.body; 
+
+		let darkColor = getComputedStyle(html).getPropertyValue("--dark-color"), 
+		yellowColor = getComputedStyle(html).getPropertyValue("--yellow-color")
+
+		// console.log(darkColor, yellowColor);
+
+		body.style.color = yellowColor; 
+		body.style.backgroundColor = darkColor; 
+
+		//Para buscar un elemento padre, si no teiene ese elemento retorna a null
+		// console.log(document.querySelector('a').closest('body'));
+
+
+
+		//Usando fragmentos 
+		const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo']; 
+
+		let ul = document.createElement('ul'); 
+		let fragment = document.createDocumentFragment(); 
+
+		meses.forEach( el => {
+			const li = document.createElement('li'); 
+			li.textContent = el; 
+			fragment.appendChild(li); 
+		}); 
+
+		ul.appendChild(fragment); 
+		document.body.appendChild(ul); 
+
+
+
+		//Usando templates de html
+
+		const template = document.getElementById('template-card').content, 
+		$fragment = document.createDocumentFragment(), 
+		cardContent = [
+			{
+				title: 'Tecnología', 
+				img: 'https://placeimg.com/200/200/tech'
+			},
+			{
+				title: 'Gente', 
+				img: 'https://placeimg.com/200/200/people'
+			},
+			{
+				title: 'Animales', 
+				img: 'https://placeimg.com/200/200/animals'
+			},
+		]; 
+
+
+		cardContent.forEach(el => {
+			template.querySelector("img").setAttribute('src', el.img);
+			template.querySelector("img").setAttribute('title', el.title);
+			template.querySelector("figcaption").textContent = el.title;
+
+			let clone = document.importNode(template, true); 
+			$fragment.appendChild(clone); 
+		}); 
+
+		document.body.appendChild($fragment); 
+
+
+		/* 
+		.insertAdjacent...
+		    .insertAdjacentElement(position,el)
+		    .insertAdjacentHTML(position,html)
+		    .insertAdjacentText(position,text)
+
+		posiciones:
+		    beforebegin (hermano anterior)
+		    afterbegin (primer hijo)
+		    beforeend (ultimo hijo)
+		    afterend  (hermano siguiente)
+		*/
+		
+		//Remover un evento luego de ejecutar su primer o unica ejecución 
+		const $eventoRemover = document.getElementById('btn'); 
+
+		const removerEvento = e => {
+			// console.log(`Removido el evento ${e.type}`);
+			$eventoRemover.removeEventListener('click', removerEvento);
+
+			//once: true lo realiza una vez pero sin remover el evento
+		}
+
+		$eventoRemover.addEventListener('click', removerEvento); 
+
+		//usando matches para evaluar el evento
+		document.addEventListener('click', (e) => {
+
+			// console.log(`click en `, e.target); 
+
+			if (e.target.matches('button')) {
+				console.log('diste click en el botón');
+				e.preventDefault(); 
+			}	
+		}); 
+
+
+
+
+		//darkTheme
+
+		let moon = 'Moon', sun = 'Sun'; 
+
+		const lightMode = (btn, selectors, cssClass) =>{
+			btn.textContent = sun; 
+			selectors.forEach( el => el.classList.add(cssClass));
+		}
+
+		const darkMode = (btn, selectors, cssClass) =>{
+			
+			btn.textContent = moon; 
+			selectors.forEach( el => el.classList.remove(cssClass)); 
+		}
+
+		const ls = localStorage; 
+
+
+		function darkTheme(btn, classDark) {
+ 
+
+			const $btnDarkTheme = document.querySelector(btn),
+			$classDark = document.querySelectorAll(`[data-dark]`); 
+
+			
+			document.addEventListener('click', (e) => {
+				if(e.target.matches(btn)) {
+
+					console.log($btnDarkTheme.textContent);
+					
+					if($btnDarkTheme.textContent === 'Moon') {
+
+						lightMode($btnDarkTheme, $classDark, 'dark-theme'); 
+						ls.setItem('dark', 'dark-theme');
+
+					}else {
+						darkMode($btnDarkTheme, $classDark, 'dark-theme'); 
+						ls.removeItem('dark', 'dark-theme');
+					}
+
+				}
+
+			});
+
+			document.addEventListener('DOMContentLoaded', function() {
+
+				if(ls.getItem('dark') === 'dark-theme') {
+
+					lightMode($btnDarkTheme, $classDark, 'dark-theme'); 
+
+				}else { 
+
+					darkMode($btnDarkTheme, $classDark, 'dark-theme');
+
+				}
+
+			}); 
+		
+
+		}
+
+
+		darkTheme('.btn-dark-theme' ,'dark-theme'); 
+
+		//detección de dispositivos 
+
+		const n = navigator, ua = n.userAgent;
+
+		function userDeviceInfo(id) {
+			
+			const $id = document.getElementById(id), 
+			isMobile = {
+				android: () => ua.match(/android/i),
+				ios: () => ua.match(/iphone|ipad|ipod/i),
+				windows: () => ua.match(/windows phone/i),
+				any: function() {
+					return this.android() || this.ios() || this.windows(); 
+				}
+			}, 
+			isDesktop = {
+				linux: () => ua.match(/android/i),
+				mac: () => ua.match(/mac os/i),
+				windows: () => ua.match(/windows nt/i),
+				any: function() {
+					return this.linux() || this.mac() || this.windows(); 
+				}
+			}, 
+			isBrowser = {
+				chrome: () => ua.match(/chrome/i),
+				safari: () => ua.match(/safari/i),
+				firefox: () => ua.match(/firefox/i),
+				opera: () => ua.match(/OPR|opera mini/i),
+				ie: () => ua.match(/msie|iemobile/i),
+				edge: () => ua.match(/edge/i),
+				any: function() {
+					return this.chrome() || this.safari() || this.firefox() || this.opera() || this.ie() || this.edge(); 
+				}
+			}
+
+			// console.log(ua);
+			// console.log(isBrowser.any());
+
+			$id.innerHTML = `
+			<ul>
+			    <li>User Agent: <b>${ua}</b></li>
+			    <li>Plataforma: <b>${ ( isMobile.any() ) ? isMobile.any() : isDesktop.any()   }</b></li>
+			    <li>Navegador: <b>${isBrowser.any()}</b></li>
+			</ul>
+			`; 
+
+			//Verificar contenido exclusivo
+			if (isBrowser.chrome()) $id.innerHTML = `<p>Este contenido solo se ve en navegador Chrome</p>`; 
+
+			if (isBrowser.opera()) $id.innerHTML = `<p>Este contenido solo se ve en navegador Opera</p>`; 
+
+			//Redireccionar 
+			if (isMobile.android()) window.location.href = 'www.google.com'
+		} 
+
+		userDeviceInfo("user-device"); 
+
+		//Verificar si se está en linea 
+
+		// console.log(window.navigator.onLine);
+
+		function networkStatus() {
+
+			window.addEventListener('online', e => {console.log(window.navigator.onLine);}) 	 
+			window.addEventListener('offline', e => {console.log(window.navigator.onLine);}) 	 
+		}
+
+		
+
+
+		//Deteccion de la webcam 
+
+		function webCam() {
+
+			$video = document.getElementById('webcam'); 
+			// console.log(n.mediaDevices);
+
+			if (n.mediaDevices.getUserMedia) {
+
+				n.mediaDevices.getUserMedia({video:true, audio:false}).then( (stream) => {
+					$video.srcObject = stream; 
+					$video.play(); 
+				} ).catch( (err) => console.log(err) )
+			}
+		}
+
+		webCam(); 
+
+
+
+		//Filtros de Búsqueda
+
+		function seachFilter(input, selectors) {
+			document.addEventListener('keyup', e => {
+				if (e.target.matches(input)) {
+
+					if (e.key === 'Escape') e.target.value = '';  //limpiar el input
+
+					document.querySelectorAll(selectors).forEach(el => 
+
+						el.textContent.toLowerCase().includes(e.target.value)
+						? el.classList.remove('filter')
+						: el.classList.add('filter') //Agrega la clase cuando no sean los elementos en coincidencia 
+
+					)
+				}
+			}); 
+		}
+
+		seachFilter('.card-filter', '.card'); 
+
+	</script>
+	<script src="cuenta_regresiva.js"></script>
+</body>
+</html>

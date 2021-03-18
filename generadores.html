@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complemento para la Práctica de Generadores</title>
+</head>
+<body>
+    
+    <input type="button" value="Obtener" onclick="get()">
+    <div id="myDiv"></div>
+    <script>
+
+        async function* request(){
+            let i = 1; 
+
+            let url = 'https://jsonplaceholder.typicode.com/todos/'
+            while (true) {
+                const resp = await fetch(url+i); 
+                const json = await resp.json(); 
+                
+                yield json; 
+                i++;
+            }
+        }
+
+        let r = request(); 
+
+        async function get() {
+            console.log( await r.next()); 
+            let content = await r.next(); 
+            document.getElementById('myDiv').innerHTML += content.value.title + ' '; 
+        }
+    </script>
+</body>
+</html>

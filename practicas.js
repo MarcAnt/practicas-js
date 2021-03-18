@@ -1,3 +1,63 @@
+//Funciones
+
+const dollars = ['32$', '15$', '12$', '17$', '20$']; 
+
+//map
+
+//Forma manual a
+let prices = []; 
+for (let i = 0; i <  dollars.length; i++) {
+	prices[i] = Number(dollars[i].slice(0, dollars[i].length - 1)); 
+}
+//Forma manual b 
+let prices = []; 
+for (const dollar of dollars) {
+	prices.push(Number(dollar.slice(0, dollar.length - 1))); 
+}
+
+prices = dollars.map((dollar) => Number(dollar.slice(0, dollar.length - 1)))
+console.log(prices);
+
+//filter 
+
+//filtro manual 
+let expensive = []; 
+for (const price of prices) {
+	if (price >= 20) {
+		expensive.push(price); 
+	}
+}
+
+prices.filter((price) => price >= 20); 
+
+
+
+//reduce
+let sum = 0; 
+for(price of expensive){
+	sum+= price; 
+}
+sum = expensive.reduce( (acum, price) => acum + price); 
+
+//Todos juntos 
+sum = dollars	
+	.map(Number(dollar.slice(0, dollar.length - 1)))
+	.filter((price) => price >= 20)
+	.reduce( (acum, price) => acum + price); 
+
+//Todos juntos pero sin usar las funciones map, filter ni reduce
+sum = 0; 
+for (const dollar of dollars) {
+	const price = Number(dollar.slice(0, dollar.length - 1)); 
+	if (price >= 20) {
+		sum += price; 
+	}
+}
+//usando un foreach
+prices.map(price => ({price, currency: '$'})).forEach(obj => obj.price += 10); 
+
+
+
 //Desctructurando 
 
 let numeros = [1, 'a', false]; 
@@ -7,6 +67,7 @@ console.log(uno, a, bool);
 let obj = {nombre: 'Marcos', edad: 32}; 
 const {nombre, edad} = obj; 
 console.log(nombre, edad);
+
 
 // Parametros REST 
 function sumar(a, b, ...c) {
@@ -22,11 +83,22 @@ function sumar(a, b, ...c) {
 console.log(sumar(2,5));
 console.log(sumar(2,5,7));
 
+
+
+
 // Spread operator
 let arr1 = [1,2,3,4,5], arr2 = [6,7,8,9,10];
 
 const arrFinal = [...arr1, ...arr2]; 
 console.log(arrFinal);
+
+
+
+
+
+
+
+
 
 
 
@@ -1440,6 +1512,19 @@ const misPelis = [
 
  	console.log(objUsuarios);
 
+
+
+
+
+
+
+
+
+
+
+
+
+	 
 
  	//This
 

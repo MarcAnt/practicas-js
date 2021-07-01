@@ -1206,7 +1206,99 @@ const misPelis = [
  // 	.catch(err => console.error(err)); 
 
 
+ 	const yt = new Promise( resolve => {
+		 setTimeout(()=> {
+			console.log('getting stuff from youtube');
+			resolve({ videos: [1,2,3,4]}) 
+		 }, 2000)
+	})
 
+ 	const fb = new Promise( resolve => {
+		 setTimeout(()=> {
+			console.log('getting stuff from fb');
+			resolve({ user: 'Name'}) 
+		 }, 2000)
+	}) 
+
+	//Obtener los resultados de ambas promesas
+	Promise.all([yt, fb]).then(result => console.log(result))
+
+
+ 	let Stoks = {
+		Fruits: ['Fresa', 'Anana', 'Parchita', 'Banana'],
+		liquid: ['agua', 'ice'],
+		holder: ['cono', 'galleta', 'paleta'],
+		toppings: ['chocolate', 'mani']
+	}
+
+	let is_shop_open = true;
+
+	// let order = (time, work) => {
+	// 	return new Promise((resolve, reject) => {
+	// 		if(is_shop_open){
+
+	// 			setTimeout(() => {
+	// 				resolve(work())
+					
+	// 			}, time);
+
+	// 		}else {
+	// 			reject(console.log('The shop is closed'))
+	// 		}
+	// 	} )
+	// }
+
+	// order(2000, () => console.log(`${Stoks.Fruits[2]} was selected`))
+	// 	.then( () =>{ return order(0, () => console.log(`Prod has started`)) })
+	// 	.then( () =>{ return order(2000, () => console.log(`the fruit was chopper`)) } )
+	// 	.then( () =>{ return order(1000, () => console.log(` ${Stoks.liquid[0]} and ${Stoks.liquid[1]} was selected`))})
+	// 	.then( () =>{ return order(1000, () => console.log(`Start the machine`))})
+	// 	.then( () =>{ return order(2000, () => console.log(` ice cream placed on ${Stoks.holder[1]}`))})
+	// 	.then( () =>{ return order(3000, () => console.log(`${Stoks.toppings[1]} was selected`))})
+	// 	.then( () =>{ return order(1000, () => console.log(`The ice cream was served`))})
+	// 	.catch(()=> {
+	// 		console.log('Costumer left');
+	// 	})
+	// 	.finally( ()=> console.log("day ended, shop is closed"))
+ 
+ 	//Usando async await
+
+	 let time = ms => {
+		 return new Promise( (resolve, reject) => {
+			 if (is_shop_open) {
+				setTimeout(resolve, ms); 
+			 }else {
+				reject(console.log('shop is closed'))
+			 }
+		 } )
+	 }
+
+
+	async function makeIceCream() {
+		try {
+
+			await time(2000)
+			console.log(`${Stoks.Fruits[1]} was selected`)
+			await time(0)
+			console.log(`Prod has started`)
+			await time(1000)
+			console.log(` ${Stoks.liquid[0]} and ${Stoks.liquid[1]} was selected`)
+			await time(1000)
+			console.log(`Start the machine`)
+			await time(2000)
+			console.log(` ice cream placed on ${Stoks.holder[1]}`)
+			await time(3000)
+			console.log(`${Stoks.toppings[1]} was selected`)
+			await time(1000)
+			console.log(`The ice cream was served`)
+			
+		} catch (error) {
+			console.log('customer left', error);
+		}
+		finally{ console.log("day ended, shop is closed") }
+	}
+
+	makeIceCream()
 
  	async function funcionAsincronaDeclarada() {
  		try {
@@ -1259,6 +1351,105 @@ const misPelis = [
  	}; 
 	
 	// funcionAsincronaExpresada(); 
+	
+	function setUser(user, email) {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve({user, email})
+			}, 2000);
+		})
+	}  
+	
+	async function getUserInfo() {
+		try {
+			const userLogged = await setUser('Marcos', 'mar@gmai.com');
+			console.log(userLogged.user);
+			
+		} catch (error) {
+			
+			console.log(error);
+		}
+		
+	}
+
+	getUserInfo();
+
+	const getAllUserEmails = async () => {
+		const response = await fetch('https://jsonplaceholder.typicode.com/users');
+		const jsonUserData = await response.json();
+
+		const userEmailArray = jsonUserData.map(user => {
+			return user.email;
+		});
+
+		//se usa una funcion para poder obtener los datos 
+		postToWeb(userEmailArray);
+	}
+
+	const postToWeb = (data) => {
+		console.log(data);
+	}
+
+	getAllUserEmails();
+
+	const obj = {
+		id: 'ajhajha',
+		name: 'Marcos'
+	}
+
+	const postData = async (obj) => {
+		const response = await fetch('https://httpbin.org/post', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(obj)
+		});
+
+		const jsonResponse = await response.json();
+
+		console.log(jsonResponse);
+	}
+	
+	postData(obj);
+
+
+	const getDataFromForm = () => {
+		const rObj = {
+			firstname: 'Bruce',
+			lastname: 'Lee',
+			categories: ['nerdy']
+		};
+
+		return rObj;
+	}
+
+	const buildRequestUrl = (requestData) => {
+		return `http://api.icndb.com/jokes/random?firstName=${requestData.firstname}&lastname=${requestData.lastname}&limitTo=${requestData.categories}`;
+	}
+
+	const requestJoke = async (url) => {
+		const response = await fetch(url);
+		const jsonResponse = await response.json();
+		const joke = jsonResponse.value.joke();
+
+		postJokeToPage(joke);
+	}
+
+	const postJokeToPage = (joke) => {
+		console.log(joke);
+	}
+
+	//La funcion controla el flujo de los demas
+	const processJokeRequest = async () => {
+		const rdata = getDataFromForm();
+		const rurl = buildRequestUrl(rdata);
+		await requestJoke(rurl);
+		console.log('finished!');
+	}
+
+
+	processJokeRequest();
 
 
 

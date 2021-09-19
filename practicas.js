@@ -1115,6 +1115,82 @@ const misPelis = [
   },
 ];
 
+//Callback
+
+const sendMessage = (message, callback) => {
+  return callback(message);
+};
+
+const strings = ["my", "forEach", "example"];
+let result = "";
+
+function spell(str, index, array) {
+  if (array.lenght - 1 !== index) {
+    result += str + " ";
+  } else {
+    result += str + "!!!";
+  }
+}
+
+function forEach(arr, callback) {
+  for (let i = 0; i < arr.length; i++) {
+    callback(arr[i], i, arr);
+  }
+}
+
+forEach(string, spell);
+
+let result = null;
+function callback(str, i, arr) {
+  if (arr[i] === str) {
+    result = i;
+    return i;
+  } else {
+    result = -1;
+    return -1;
+  }
+}
+
+function findIndex(arr, callback, str) {
+  for (let i = 0; i < arr.length; i++) {
+    callback(str, i, arr);
+  }
+}
+
+findIndex(strings, callback, "epa");
+console.log(result);
+
+//Otra forma
+
+function callback2(str, i, arr) {
+  return str === arr[i];
+}
+
+function findIndex2(arr, callback) {
+  for (let i = 0; i < arr.length; i++) {
+    if (callback(str, i, arr)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+console.log(findIndex2(strings, callback2));
+
+function countDown(sec) {
+  let int = setInterval(function () {
+    sec--;
+    if (sec === 0) {
+      console.log("Ring Ring Ring!!!");
+      clearInterval(int);
+    } else {
+      console.log("Timer:", sec);
+    }
+  }, 1000);
+}
+
+countDown(3);
+
 // misPelis.forEach(el => new Pelicula(el).fichaTecnica())
 
 //Callbacks Una forma de controlar los llamados asíncronos
@@ -1283,6 +1359,52 @@ let is_shop_open = true;
 // 		console.log('Costumer left');
 // 	})
 // 	.finally( ()=> console.log("day ended, shop is closed"))
+
+//Encadenado de Promesas
+let counter = 0;
+//la funcion solo se encarga de aumentar el valor del counter
+function incCounter() {
+  counter++;
+  console.log("Counter:", counter);
+}
+
+function runLater(callback, timeInMs) {
+  let p = new Promise(function (resolve, reject) {
+    setTimeout(() => {
+      //llamdada al func incCounter
+      let res = callback();
+      resolve(res);
+    }, timeInMs);
+  });
+
+  return p;
+}
+//Se encadena cuantas veces sea necesario
+runLater(incCounter, 1000)
+  .then(function () {
+    return runLater(incCounter, 2000);
+  })
+  .then(function () {
+    return runLater(incCounter, 3000);
+  });
+
+//HTTPRequest
+
+let XHR = new XMLHttpRequest();
+XHR.onreadystatechange = function () {
+  console.log(XHR.readyState);
+  if (XHR.readyState === 4) {
+    //Si la respuesta es un JSON
+    let data = JSON.parse(XHR.responseText);
+    if (XHR.status == 200) {
+      console.log(XHR.responseText);
+    } else {
+      console.log("Hubo un problema");
+    }
+  }
+};
+XHR.open("GET", "https://api.github.com/zen");
+XHR.send();
 
 //Usando async await
 
